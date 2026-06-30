@@ -156,7 +156,7 @@ namespace MatchZy
                     {
                         var p = kvp.Value;
                         if (p == null || !p.IsValid || p.IsBot || !p.UserId.HasValue) continue;
-                        if (p.Connected != PlayerConnectedState.PlayerConnected) continue;
+                        if (p.Connected != PlayerConnectedState.Connected) continue;
 
                         CsTeam team = GetPlayerTeam(p);
                         if (team == CsTeam.CounterTerrorist)

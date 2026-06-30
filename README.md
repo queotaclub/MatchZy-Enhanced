@@ -26,9 +26,14 @@
 
 ### Manual Installation
 
-1. Download the [latest release](https://github.com/sivert-io/MatchZy-Enhanced/releases)
-2. Extract to `game/csgo/` directory
-3. Restart your server
+1. Download the [latest release](https://github.com/queotaclub/MatchZy-Enhanced/releases/latest/download/MatchZy.zip)
+2. Extract to `game/csgo/addons/counterstrikesharp/plugins/` (zip contains a `MatchZy/` folder)
+3. Apply your server cfg from `cfg/MatchZy/` separately (Queota uses `game-server-files`)
+4. Restart your server
+
+**QUEOTA releases:** pushes to `main` auto-publish `MatchZy.zip` via GitHub Actions (see `.github/workflows/build.yml`). The legacy `./release.sh` / manual `release.yml` workflow is deprecated.
+
+**Runtime:** build targets CounterStrikeSharp **1.0.370** (.NET 10). Server CSS must be ≥ that version.
 
 📖 **[Documentation](https://docs.sivert.io/docs/me)**
 

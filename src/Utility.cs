@@ -1502,7 +1502,7 @@ namespace MatchZy
 
                     // A player controller still exists after a player disconnects
                     // Hence checking whether the player is actually in the server or not
-                    if (player.Connected != PlayerConnectedState.PlayerConnected) continue;
+                    if (player.Connected != PlayerConnectedState.Connected) continue;
 
                     if (player.UserId.HasValue)
                     {
@@ -3055,7 +3055,7 @@ namespace MatchZy
             foreach (var kvp in playerData)
             {
                 var p = kvp.Value;
-                if (p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.TeamNum == teamNum)
+                if (p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.Connected && p.TeamNum == teamNum)
                 {
                     teamPlayerCount++;
                 }

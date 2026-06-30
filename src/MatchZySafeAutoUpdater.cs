@@ -299,9 +299,9 @@ public partial class MatchZy
             {
                 switch (player.Connected)
                 {
-                    case PlayerConnectedState.PlayerConnected:
-                    case PlayerConnectedState.PlayerConnecting:
-                    case PlayerConnectedState.PlayerReconnecting:
+                    case PlayerConnectedState.Connected:
+                    case PlayerConnectedState.Connecting:
+                    case PlayerConnectedState.Reconnecting:
                         Server.ExecuteCommand(
                             $"kickid {player.UserId} Due to the game update (Version: {_requiredVersion}), the server is now restarting.");
                         break;

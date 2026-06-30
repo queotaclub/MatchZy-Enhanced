@@ -654,7 +654,7 @@ public partial class MatchZy
             {
                 if (player == null) continue;
                 if (!player.IsValid || !player.IsBot || player.IsHLTV) continue;
-                if (player.Connected != PlayerConnectedState.PlayerConnected) continue;
+                if (player.Connected != PlayerConnectedState.Connected) continue;
 
                 bots.Add(player);
             }

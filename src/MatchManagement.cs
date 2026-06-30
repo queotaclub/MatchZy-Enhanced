@@ -1057,7 +1057,7 @@ namespace MatchZy
                 {
                     if (player == null) continue;
                     if (!player.IsValid || player.IsBot || player.IsHLTV) continue;
-                    if (player.Connected != PlayerConnectedState.PlayerConnected) continue;
+                    if (player.Connected != PlayerConnectedState.Connected) continue;
 
                     if (player.UserId.HasValue)
                     {

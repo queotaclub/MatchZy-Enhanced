@@ -345,7 +345,7 @@ public partial class MatchZy
             if (!player.IsValid) continue;
             if (player.IsHLTV) continue;
             if (!player.UserId.HasValue) continue;
-            if (player.Connected != PlayerConnectedState.PlayerConnected) continue;
+            if (player.Connected != PlayerConnectedState.Connected) continue;
 
             if (!player.IsBot)
             {
@@ -415,7 +415,7 @@ public partial class MatchZy
             if (player.IsHLTV) continue;
             if (!player.IsBot) continue;
             if (!player.UserId.HasValue) continue;
-            if (player.Connected != PlayerConnectedState.PlayerConnected) continue;
+            if (player.Connected != PlayerConnectedState.Connected) continue;
 
             totalBotsFound++;
             int userId = player.UserId.Value;
