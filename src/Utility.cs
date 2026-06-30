@@ -65,9 +65,9 @@ namespace MatchZy
         /// <summary>
         /// Displays a center HTML notification to all players
         /// </summary>
-        private void PrintToCenterHtmlAll(string message)
+        private void PrintToCenterHtmlAll(string message, bool force = false)
         {
-            if (!centerHtmlNotifications.Value) return;
+            if (!force && !centerHtmlNotifications.Value) return;
             
             var playerEntities = Utilities.GetPlayers().Where(p => p?.IsValid == true && !p.IsBot);
             foreach (var player in playerEntities)
@@ -109,9 +109,9 @@ namespace MatchZy
         /// <summary>
         /// Displays a large, styled notification to all players (with duration)
         /// </summary>
-        private void ShowNotification(string message, string color = "#00ff00", int size = 20, float? durationSeconds = null)
+        private void ShowNotification(string message, string color = "#00ff00", int size = 20, float? durationSeconds = null, bool force = false)
         {
-            if (!centerHtmlNotifications.Value) return;
+            if (!force && !centerHtmlNotifications.Value) return;
             
             float actualDuration = durationSeconds ?? notificationDurationGlobal.Value;
             string html = $"<div style='font-size:{size}px; color:{color}; font-weight:bold; text-align:center; margin-top:200px;'>{message}</div>";
@@ -126,7 +126,7 @@ namespace MatchZy
             }
             
             // Send immediately
-            PrintToCenterHtmlAll(html);
+            PrintToCenterHtmlAll(html, force);
             
             // Calculate how many times to re-send (every 1 second to keep it visible)
             int repeatCount = (int)Math.Ceiling(actualDuration);
@@ -139,7 +139,7 @@ namespace MatchZy
                 {
                     if (repeatCounter[0] > 0)
                     {
-                        PrintToCenterHtmlAll(html);
+                        PrintToCenterHtmlAll(html, force);
                         repeatCounter[0]--;
                         // Schedule next tick
                         activeNotificationTimers[notificationKey] = AddTimer(1.0f, NotificationTick);
@@ -1161,11 +1161,7 @@ namespace MatchZy
             // Professional LIVE announcement + short core command help for players
             PrintToAllChat($"{ChatColors.Lime}MATCH LIVE{ChatColors.Default} — {ChatColors.Green}{matchzyTeam1.teamName}{ChatColors.Default} vs {ChatColors.Green}{matchzyTeam2.teamName}{ChatColors.Default}. Good luck & have fun!");
             
-            // Display match rules and configuration
-            DisplayMatchRules();
-            
-            // Show center notification
-            ShowNotification($"🔴 MATCH LIVE 🔴<br>{matchzyTeam1.teamName} vs {matchzyTeam2.teamName}", "#00ff00", 24);
+            ShowNotification("acesse QUEOTA.club - bom jogo", "#ff00ff", 24, force: true);
 
             // Send warmup_ended event if not coming from knife round
             if (!isSideSelectionPhase)
@@ -1860,70 +1856,6 @@ namespace MatchZy
                     Server.NextFrame(() => HandleMatchStart(allowAutoReadySimulationWithoutHumans: true));
                 }
             }, TimerFlags.REPEAT);
-        }
-
-        private void DisplayMatchRules()
-        {
-            List<string> rules = new List<string>();
-            
-            // Pause rules
-            if (bothTeamsUnpauseRequired.Value)
-            {
-                rules.Add($"{ChatColors.Grey}Pauses:{ChatColors.Default} {ChatColors.Red}.pause{ChatColors.Default} to pause, {ChatColors.Red}.unpause{ChatColors.Default} to resume (both teams must unpause)");
-            }
-            else
-            {
-                rules.Add($"{ChatColors.Grey}Pauses:{ChatColors.Default} {ChatColors.Red}.pause{ChatColors.Default} to pause, {ChatColors.Red}.unpause{ChatColors.Default} to resume");
-            }
-            
-            if (maxPausesPerTeam.Value > 0)
-            {
-                rules.Add($"{ChatColors.Grey}Max pauses:{ChatColors.Default} {ChatColors.Yellow}{maxPausesPerTeam.Value}{ChatColors.Default} per team");
-            }
-            
-            if (pauseDuration.Value > 0)
-            {
-                int minutes = pauseDuration.Value / 60;
-                int seconds = pauseDuration.Value % 60;
-                string durationText = minutes > 0 ? $"{minutes}m {seconds}s" : $"{seconds}s";
-                rules.Add($"{ChatColors.Grey}Max pause length:{ChatColors.Default} {ChatColors.Yellow}{durationText}{ChatColors.Default}");
-            }
-            
-            // GG command
-            if (ggEnabled.Value)
-            {
-                int thresholdPercent = (int)(ggThreshold.Value * 100);
-                string ggRule = $"{ChatColors.Grey}Forfeit:{ChatColors.Default} {ChatColors.Red}.gg{ChatColors.Default} to forfeit (requires {ChatColors.Yellow}{thresholdPercent}%{ChatColors.Default} team consensus)";
-                if (ggMinScoreDiff.Value > 0)
-                {
-                    ggRule += $", min score diff: {ChatColors.Yellow}{ggMinScoreDiff.Value}{ChatColors.Default}";
-                }
-                rules.Add(ggRule);
-            }
-            
-            // Side selection timer
-            if (sideSelectionEnabled.Value && sideSelectionTime.Value > 0)
-            {
-                rules.Add($"{ChatColors.Grey}Side selection:{ChatColors.Default} {ChatColors.Yellow}{sideSelectionTime.Value}s{ChatColors.Default} timer after knife round");
-            }
-            
-            // FFW system
-            if (ffwEnabled.Value)
-            {
-                int ffwMinutes = ffwTime.Value / 60;
-                rules.Add($"{ChatColors.Grey}Forfeit on disconnect:{ChatColors.Default} {ChatColors.Yellow}{ffwMinutes}min{ChatColors.Default} timer if entire team leaves");
-            }
-            
-            // Display rules
-            if (rules.Count > 0)
-            {
-                PrintToAllChat($"{ChatColors.Grey}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{ChatColors.Default}");
-                foreach (string rule in rules)
-                {
-                    PrintToAllChat(rule);
-                }
-                PrintToAllChat($"{ChatColors.Grey}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{ChatColors.Default}");
-            }
         }
 
         private void HandleMatchStart(bool allowAutoReadySimulationWithoutHumans = false)

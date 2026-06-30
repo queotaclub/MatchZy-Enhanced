@@ -1002,29 +1002,7 @@ namespace MatchZy
             
             Log($"[EndSeries] Demo recording: {isDemoRecordingEnabled}, Upload URL: {hasUploadEndpoint}, kickDelay: {kickDelay}s");
 
-            int minutes = kickDelay / 60;
-            int seconds = kickDelay % 60;
-            string timeText = minutes > 0 ? $"{minutes} minute{(minutes > 1 ? "s" : "")} {seconds} second{(seconds > 1 ? "s" : "")}" : $"{seconds} second{(seconds > 1 ? "s" : "")}";
-
-            string resetMessage;
-            if (!isDemoRecordingEnabled)
-            {
-                resetMessage = $"{ChatColors.Grey}Series ended. Server will reset in {ChatColors.Yellow}{timeText}{ChatColors.Default}.";
-            }
-            else if (!hasUploadEndpoint)
-            {
-                resetMessage = $"{ChatColors.Grey}Series ended. Server will reset in {ChatColors.Yellow}{timeText}{ChatColors.Default} after demo is saved.";
-            }
-            else
-            {
-                resetMessage = $"{ChatColors.Grey}Series ended. Server will reset in {ChatColors.Yellow}{timeText}{ChatColors.Default} after demo upload completes.";
-            }
-            
-            PrintToAllChat(resetMessage);
-            PrintToAllChat($"{ChatColors.Grey}All players will be disconnected to prepare the server for the next match.{ChatColors.Default}");
-
             // Show countdown on center screen for last 30 seconds (or full duration if less than 30s)
-            int countdownStart = kickDelay > 30 ? 30 : kickDelay;
             if (kickDelay > 30)
             {
                 // Start countdown from 30 seconds mark
