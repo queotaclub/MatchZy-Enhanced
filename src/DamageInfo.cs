@@ -62,53 +62,27 @@ namespace MatchZy
             if (!enableDamageReport.Value) return;
             try
             {
-                HashSet<(int, int)> processedPairs = new HashSet<(int, int)>();
-
                 foreach (var entry in playerDamageInfo)
                 {
                     int attackerId = entry.Key;
+                    if (!playerData.TryGetValue(attackerId, out var attackerController)) continue;
+                    if (attackerController == null || !attackerController.IsValid) continue;
+                    if (attackerController.Connected != PlayerConnectedState.Connected) continue;
+
                     foreach (var (targetId, targetEntry) in entry.Value)
                     {
-                        if (processedPairs.Contains((attackerId, targetId)) || processedPairs.Contains((targetId, attackerId)))
-                            continue;
-
-                        // Access and use the damage information as needed.
                         int damageGiven = targetEntry.DamageHP;
-                        int hitsGiven = targetEntry.Hits;
-                        int damageTaken = 0;
-                        int hitsTaken = 0;
+                        if (damageGiven <= 0) continue;
 
-                        if (playerDamageInfo.TryGetValue(targetId, out var targetInfo) && targetInfo.TryGetValue(attackerId, out var takenInfo))
-                        {
-                            damageTaken = takenInfo.DamageHP;
-                            hitsTaken = takenInfo.Hits;
-                        }
+                        if (!playerData.TryGetValue(targetId, out var targetController)) continue;
+                        if (targetController == null || !targetController.IsValid) continue;
+                        if (targetController.Connected != PlayerConnectedState.Connected) continue;
+                        if (!targetController.PlayerPawn.IsValid || targetController.PlayerPawn.Value == null) continue;
 
-                        if (!playerData.ContainsKey(attackerId) || !playerData.ContainsKey(targetId)) continue;
+                        int targetHP = targetController.PlayerPawn.Value.Health < 0 ? 0 : targetController.PlayerPawn.Value.Health;
+                        string targetName = targetController.PlayerName;
 
-                        var attackerController = playerData[attackerId];
-                        var targetController = playerData[targetId];
-
-                        if (attackerController != null && targetController != null)
-                        {
-                            if (!attackerController.IsValid || !targetController.IsValid) continue;
-                            if (attackerController.Connected != PlayerConnectedState.Connected) continue;
-                            if (targetController.Connected != PlayerConnectedState.Connected) continue;
-                            if (!attackerController.PlayerPawn.IsValid || !targetController.PlayerPawn.IsValid) continue;
-                            if (attackerController.PlayerPawn.Value == null || targetController.PlayerPawn.Value == null) continue;
-
-                            int attackerHP = attackerController.PlayerPawn.Value.Health < 0 ? 0 : attackerController.PlayerPawn.Value.Health;
-                            string attackerName = attackerController.PlayerName;
-
-                            int targetHP = targetController.PlayerPawn.Value.Health < 0 ? 0 : targetController.PlayerPawn.Value.Health;
-                            string targetName = targetController.PlayerName;
-
-                            PrintToPlayerChat(attackerController, $"{ChatColors.Green}To: [{damageGiven} / {hitsGiven} hits] From: [{damageTaken} / {hitsTaken} hits] - {targetName} - ({targetHP} hp){ChatColors.Default}");
-                            PrintToPlayerChat(targetController, $"{ChatColors.Green}To: [{damageTaken} / {hitsTaken} hits] From: [{damageGiven} / {hitsGiven} hits] - {attackerName} - ({attackerHP} hp){ChatColors.Default}");
-                        }
-
-                        // Mark this pair as processed to avoid duplicates.
-                        processedPairs.Add((attackerId, targetId));
+                        PrintToPlayerChat(attackerController, $"- {targetName} [{ChatColors.Green}{targetHP} hp{ChatColors.Default}] {damageGiven}");
                     }
                 }
                 playerDamageInfo.Clear();
