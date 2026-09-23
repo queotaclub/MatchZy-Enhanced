@@ -1,5 +1,6 @@
 obj/
 bin/
+.cssharp/
 publish/
 build/
 /MatchZy/

@@ -34,6 +34,9 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Pack CounterStrikeSharp.API
+        run: bash .github/pack-cssharp.sh
+
       - name: Restore
         run: dotnet restore
 
@@ -53,6 +56,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+
+      - name: Pack CounterStrikeSharp.API
+        run: bash .github/pack-cssharp.sh
 
       - name: Restore
         run: dotnet restore
@@ -80,4 +86,5 @@ jobs:
           body: |
             QUEOTA fork — plugin-only zip (no cfg). Extract to `game/csgo/addons/counterstrikesharp/plugins/`.
 
-            Requires CounterStrikeSharp **1.0.370+** on the server (compile target in MatchZy.csproj).
+            Built for CS2 1.41.8.2 against CounterStrikeSharp PR #1433 (`2d1b3d7`).
+            The server must run that CounterStrikeSharp build. Stock NuGet 1.0.374 does not include the gamedata fix.

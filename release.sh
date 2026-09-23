@@ -354,6 +354,10 @@ fi
 echo -e "\n${BLUE}🧹 Cleaning previous builds...${NC}"
 rm -rf build/ bin/ obj/
 
+# CounterStrikeSharp.API 1.0.375-pr1433 is packed from PR 1433 (CS2 1.41.8.2), not NuGet.
+echo -e "\n${BLUE}📥 Packing CounterStrikeSharp.API (PR 1433)...${NC}"
+bash .github/pack-cssharp.sh
+
 # Restore dependencies
 echo -e "\n${BLUE}📥 Restoring dependencies...${NC}"
 dotnet restore
@@ -371,7 +375,7 @@ mkdir -p "${BUILD_ROOT}/${RELEASE_DIR}/cfg/MatchZy"
 
 # Copy plugin files to proper directory structure
 echo -e "\n${BLUE}📂 Creating directory structure...${NC}"
-cp -r build/Release/net8.0/publish/* "${BUILD_ROOT}/${RELEASE_DIR}/addons/counterstrikesharp/plugins/MatchZy/"
+cp -r build/Release/net10.0/publish/* "${BUILD_ROOT}/${RELEASE_DIR}/addons/counterstrikesharp/plugins/MatchZy/"
 
 # Copy config files
 echo -e "${BLUE}📂 Copying config files...${NC}"
