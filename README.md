@@ -33,7 +33,7 @@
 
 **QUEOTA releases:** pushes to `main` auto-publish `MatchZy.zip` via GitHub Actions (see `.github/workflows/build.yml`). The legacy `./release.sh` / manual `release.yml` workflow is deprecated.
 
-**Runtime:** build targets CounterStrikeSharp **1.0.370** (.NET 10). Server CSS must be ≥ that version.
+**Runtime:** build targets CounterStrikeSharp **1.0.379** (.NET 10). Server CSS must be ≥ that version.
 
 📖 **[Documentation](https://docs.sivert.io/docs/me)**
 
