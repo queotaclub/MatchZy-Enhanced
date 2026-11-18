@@ -45,11 +45,14 @@ public class GrenadeThrownData
     public void Throw(CCSPlayerController player)
     {
 		CBaseCSGrenadeProjectile? grenadeEntity = null;
+		// The native smoke factory places and launches the smoke itself; one made through the
+		// entity API (signature missing) needs the same setup as the other grenades.
+		bool nativeSmoke = false;
 		switch (Type)
 		{
 			case "smoke":
 			{
-				grenadeEntity = GrenadeFunctions.CSmokeGrenadeProjectile_CreateFunc.Invoke(
+				grenadeEntity = GrenadeFunctions.CSmokeGrenadeProjectile_CreateFunc?.Invoke(
 					Position.Handle,
 					Angle.Handle,
 					Velocity.Handle,
@@ -57,46 +60,49 @@ public class GrenadeThrownData
 					IntPtr.Zero,
 					ItemIndex,
 					(int)player.Team);
+				nativeSmoke = grenadeEntity != null;
+				grenadeEntity ??= CreateWithEntityApi<CSmokeGrenadeProjectile>("smokegrenade_projectile");
 				break;
 			}
 			case "molotov":
 			{
-				grenadeEntity = GrenadeFunctions.CMolotovProjectile_CreateFunc.Invoke(
+				grenadeEntity = GrenadeFunctions.CMolotovProjectile_CreateFunc?.Invoke(
 					Position.Handle,
 					Angle.Handle,
 					Velocity.Handle,
 					Velocity.Handle,
 					IntPtr.Zero,
 					ItemIndex);
+				grenadeEntity ??= CreateWithEntityApi<CMolotovProjectile>("molotov_projectile");
 				break;
 			}
 			case "hegrenade":
 			{
-				grenadeEntity = GrenadeFunctions.CHEGrenadeProjectile_CreateFunc.Invoke(
+				grenadeEntity = GrenadeFunctions.CHEGrenadeProjectile_CreateFunc?.Invoke(
 					Position.Handle,
 					Angle.Handle,
 					Velocity.Handle,
 					Velocity.Handle,
 					IntPtr.Zero,
 					ItemIndex);
+				grenadeEntity ??= CreateWithEntityApi<CHEGrenadeProjectile>("hegrenade_projectile");
 				break;
 			}
 			case "decoy":
 			{
-				grenadeEntity = GrenadeFunctions.CDecoyProjectile_CreateFunc.Invoke(
+				grenadeEntity = GrenadeFunctions.CDecoyProjectile_CreateFunc?.Invoke(
 					Position.Handle,
 					Angle.Handle,
 					Velocity.Handle,
 					Velocity.Handle,
 					IntPtr.Zero,
 					ItemIndex);
+				grenadeEntity ??= CreateWithEntityApi<CDecoyProjectile>("decoy_projectile");
 				break;
 			}
 			case "flash":
 			{
-				grenadeEntity = Utilities.CreateEntityByName<CFlashbangProjectile>("flashbang_projectile");
-				if (grenadeEntity == null) return;
-				grenadeEntity.DispatchSpawn();
+				grenadeEntity = CreateWithEntityApi<CFlashbangProjectile>("flashbang_projectile");
 				break;
 			}
 			default:
@@ -104,7 +110,7 @@ public class GrenadeThrownData
 				break;
 		}
 
-		if (grenadeEntity != null && grenadeEntity.DesignerName != "smokegrenade_projectile")
+		if (grenadeEntity != null && !nativeSmoke)
 		{
 			grenadeEntity.InitialPosition.X = Position.X;
 			grenadeEntity.InitialPosition.Y = Position.Y;
@@ -125,5 +131,12 @@ public class GrenadeThrownData
             grenadeEntity.OriginalThrower.Raw = player.PlayerPawn.Raw;
             grenadeEntity.OwnerEntity.Raw = player.PlayerPawn.Raw;
 		}
+    }
+
+    private static T? CreateWithEntityApi<T>(string designerName) where T : CBaseCSGrenadeProjectile
+    {
+        T? entity = Utilities.CreateEntityByName<T>(designerName);
+        entity?.DispatchSpawn();
+        return entity;
     }
 }
